@@ -27,12 +27,17 @@ inputs:
   run:
     description: Optional script "injection"
 
+  fetch_depth:
+    description: git checkout fetch depth
+
 runs:
   using: composite
 
   steps:
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        fetch-depth: ${{ inputs.fetch_depth }}
 
     - name: Setup pnpm
       uses: pnpm/action-setup@v2.0.1
