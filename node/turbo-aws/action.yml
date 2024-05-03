@@ -44,8 +44,7 @@ runs:
       with:
         version: ${{ inputs.pnpm_version }}
 
-    # if else maybe token
-    - name: Setup Node 📦
+    - name: Setup Node
       uses: actions/setup-node@v3
       env:
         NODE_AUTH_TOKEN: ${{ inputs.npm_token }}
@@ -55,17 +54,7 @@ runs:
         scope: ${{ inputs.npm_scope }}
         cache: "pnpm"
 
-    - name: Setup Node 📦
-      uses: actions/setup-node@v3
-      env:
-        NODE_AUTH_TOKEN: ${{ inputs.npm_token }}
-      with:
-        node-version: ${{ inputs.node_version }}
-        registry-url: ${{ inputs.npm_registry }}
-        scope: ${{ inputs.npm_scope }}
-        cache: "pnpm"
-
-    - name: Cache turbo build setup
+    - name: Cache turbo
       uses: actions/cache@v3
       with:
         path: .turbo
@@ -73,7 +62,7 @@ runs:
         restore-keys: |
           ${{ runner.os }}-turbo-${{ github.sha }}-${{ inputs.name }}
 
-    - name: Configure AWS Credentials 🗝
+    - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@master
       if: ${{ inputs.aws_role_arn != '' }}
       with:

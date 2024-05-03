@@ -23,7 +23,7 @@ jobs:
           name: turbo-ci
           npm_token: ${{ secrets.CI_GH_TOKEN }}
           npm_registry: https://npm.pkg.github.com/
-          npm_scope: "..."
+          npm_scope: "@your-private-scope"
           aws_role_arn: ${{ vars.DEPLOYMENT_ROLE }}
           aws_region: eu-north-1
           fetch_depth: 0 # Needed to allow changeset to compare against main
