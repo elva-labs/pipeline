@@ -1,0 +1,86 @@
+name: Sets up a pnpm, turbo and aws role (optional)
+description: Checkout code, setup pnpm, node, turbo cache, configure aws credentials & install dependencies
+inputs:
+  name:
+    description: Worker name
+    required: true
+
+  node_version:
+    description: Node version to be used during install
+    default: "18"
+  npm_token:
+    description: Token to be used during install
+  npm_registry:
+    description: Registry to used during setup, use this settings if you have private packages somewhere.
+  npm_scope:
+    description: Registry / Package scope
+  pnpm_version:
+    description: Pnpm version to use during execution
+    default: 8.15.1
+
+  aws_role_arn:
+    description: AWS role to assume when accessing cloud resources
+  aws_region:
+    description: AWS region to run against
+    default: eu-north-1
+
+  run:
+    description: Optional script "injection"
+
+runs:
+  using: composite
+
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2.0.1
+      with:
+        version: ${{ inputs.pnpm_version }}
+
+    # if else maybe token
+    - name: Setup Node 📦
+      uses: actions/setup-node@v3
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm_token }}
+      with:
+        node-version: ${{ inputs.node_version }}
+        registry-url: ${{ inputs.npm_registry }}
+        scope: ${{ inputs.npm_scope }}
+        cache: "pnpm"
+
+    - name: Setup Node 📦
+      uses: actions/setup-node@v3
+      env:
+        NODE_AUTH_TOKEN: ${{ inputs.npm_token }}
+      with:
+        node-version: ${{ inputs.node_version }}
+        registry-url: ${{ inputs.npm_registry }}
+        scope: ${{ inputs.npm_scope }}
+        cache: "pnpm"
+
+    - name: Cache turbo build setup
+      uses: actions/cache@v3
+      with:
+        path: .turbo
+        key: ${{ runner.os }}-turbo-${{ github.sha }}-${{ inputs.name }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-${{ github.sha }}-${{ inputs.name }}
+
+    - name: Configure AWS Credentials 🗝
+      uses: aws-actions/configure-aws-credentials@master
+      if: ${{ inputs.aws_role_arn != '' }}
+      with:
+        role-to-assume: ${{ inputs.aws_role_arn }}
+        role-session-name: build-session
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Install Dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: ${{ inputs.name }}
+      shell: bash
+      if: ${{ inputs.run != '' }}
+      run: ${{ inputs.run }}
