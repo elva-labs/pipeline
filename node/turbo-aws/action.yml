@@ -7,7 +7,7 @@ inputs:
 
   node_version:
     description: Node version to be used during install
-    default: "18"
+    default: "20"
   npm_token:
     description: Token to be used during install
   npm_registry:
@@ -35,17 +35,17 @@ runs:
 
   steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: ${{ inputs.fetch_depth }}
 
     - name: Setup pnpm
-      uses: pnpm/action-setup@v3
+      uses: pnpm/action-setup@v4
       with:
         version: ${{ inputs.pnpm_version }}
 
     - name: Setup Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       env:
         NODE_AUTH_TOKEN: ${{ inputs.npm_token }}
       with:
@@ -55,7 +55,7 @@ runs:
         cache: "pnpm"
 
     - name: Cache turbo
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: .turbo
         key: ${{ runner.os }}-turbo-${{ github.sha }}-${{ inputs.name }}
