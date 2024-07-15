@@ -63,7 +63,7 @@ runs:
           ${{ runner.os }}-turbo-${{ github.sha }}-${{ inputs.name }}
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@master
+      uses: aws-actions/configure-aws-credentials@v4
       if: ${{ inputs.aws_role_arn != '' }}
       with:
         role-to-assume: ${{ inputs.aws_role_arn }}
